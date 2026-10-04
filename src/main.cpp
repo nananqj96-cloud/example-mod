@@ -634,8 +634,8 @@ namespace {
 
 struct SpamSettings {
     bool enabled = false;
-    cocos2d::enumKeyCodes key1 = cocos2d::KEY_Q;
-    cocos2d::enumKeyCodes key2 = cocos2d::KEY_E;
+    cocos2d::enumKeyCodes key1 = cocos2d::KEY_RightShift;
+    cocos2d::enumKeyCodes key2 = cocos2d::KEY_W;
     cocos2d::enumKeyCodes output = cocos2d::KEY_Space;
     std::string patternText = "10,10";
     int detectMs = 250;
@@ -648,6 +648,8 @@ spamfix::Detector g_spamDetector;
 bool g_spamEngaged = false;
 bool g_spamOutputDown = false;
 double g_spamLastPressMs = 0.0;
+bool g_spamSawKey1 = false;
+bool g_spamSawKey2 = false;
 int g_framesSinceSettingRefresh = 1000;
 bool g_spamSettingsInitialized = false;
 
@@ -675,8 +677,8 @@ void refreshSpamSettings() {
     g_spamSettings.detectMs = static_cast<int>(Mod::get()->getSettingValue<int64_t>("spam-detect-ms"));
     g_spamSettings.alternations = static_cast<int>(Mod::get()->getSettingValue<int64_t>("spam-alternations"));
     g_spamSettings.patternText = Mod::get()->getSettingValue<std::string>("spam-pattern");
-    g_spamSettings.key1 = readKeybindSetting("spam-key-1", cocos2d::KEY_Q);
-    g_spamSettings.key2 = readKeybindSetting("spam-key-2", cocos2d::KEY_E);
+    g_spamSettings.key1 = readKeybindSetting("spam-key-1", cocos2d::KEY_RightShift);
+    g_spamSettings.key2 = readKeybindSetting("spam-key-2", cocos2d::KEY_W);
     g_spamSettings.output = parseKey(Mod::get()->getSettingValue<std::string>("spam-output-key"))
                                 .value_or(cocos2d::KEY_Space);
 
@@ -718,6 +720,8 @@ void disengageSpam() {
     g_spamEngaged = false;
     g_spamRunner.restart();
     g_spamDetector.reset();
+    g_spamSawKey1 = false;
+    g_spamSawKey2 = false;
     setSpamOutput(false);
     if (wasEngaged) {
         Notification::create("Spam correcter stopped", NotificationIcon::Info)->show();
@@ -757,7 +761,35 @@ void spamFrame() {
     g_spamRunner.step();
 }
 
+void noteSpamSource(int which) {
+    if (!g_spamSettingsInitialized) refreshSpamSettings();
+    if (!g_spamSettings.enabled) return;
+
+    auto now = nowMs();
+    if (which == 0 && !g_spamSawKey1) {
+        g_spamSawKey1 = true;
+        Notification::create("Spam key 1 detected", NotificationIcon::Info)->show();
+    }
+    if (which == 1 && !g_spamSawKey2) {
+        g_spamSawKey2 = true;
+        Notification::create("Spam key 2 detected", NotificationIcon::Info)->show();
+    }
+
+    g_spamLastPressMs = now;
+    g_spamDetector.note(which, now);
+    if (!g_spamEngaged && g_spamDetector.alternating()) engageSpam();
+}
+
 } // namespace
+
+$on_game(Loaded) {
+    listenForKeybindSettingPresses("spam-key-1", [](Keybind const&, bool down, bool repeat, double) {
+        if (down && !repeat) noteSpamSource(0);
+    });
+    listenForKeybindSettingPresses("spam-key-2", [](Keybind const&, bool down, bool repeat, double) {
+        if (down && !repeat) noteSpamSource(1);
+    });
+}
 
 // ============================================================================
 //  Part 6 - hooks
@@ -855,18 +887,6 @@ class $modify(MacroCompareKeyboard, CCKeyboardDispatcher) {
         // spam correcter: source presses are observed internally, then swallowed
         // only after a valid alternating burst has been detected.
         if (g_spamSettings.enabled && (key == g_spamSettings.key1 || key == g_spamSettings.key2)) {
-            if (isKeyDown && !isKeyRepeat) {
-                auto now = nowMs();
-                int which = key == g_spamSettings.key1 ? 0 : 1;
-
-                // Once engaged, individual source presses never interrupt or
-                // restart the generated pattern. They only keep the active
-                // session alive. The timeout below is what disengages it.
-                g_spamLastPressMs = now;
-                g_spamDetector.note(which, now);
-                if (!g_spamEngaged && g_spamDetector.alternating()) engageSpam();
-            }
-
             // While active, block both source key-down and repeat events. Key-up
             // is allowed through so a key held before engagement cannot stick.
             if (g_spamEngaged && isKeyDown) return true;
