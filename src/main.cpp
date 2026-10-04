@@ -684,7 +684,15 @@ void refreshSpamSettings() {
     g_spamDetector.needed = std::clamp(g_spamSettings.alternations, 2, 10);
     g_spamDetector.windowMs = static_cast<double>(std::clamp(g_spamSettings.detectMs, 60, 1000));
 
+    bool wasInitialized = g_spamSettingsInitialized;
     g_spamSettingsInitialized = true;
+
+    if (!wasInitialized && g_spamSettings.enabled) {
+        Notification::create("Spam correcter ready", NotificationIcon::Info)->show();
+        log::info("Macro Compare: spam correcter ready; key1={}, key2={}, output={}, pattern={}",
+            static_cast<int>(g_spamSettings.key1), static_cast<int>(g_spamSettings.key2),
+            static_cast<int>(g_spamSettings.output), g_spamSettings.patternText);
+    }
 
     if (g_spamSettings.enabled && g_spamSettings.key1 == g_spamSettings.key2) {
         log::warn("Macro Compare: the two spam keys are the same key - the correcter needs two different keys");
@@ -706,15 +714,21 @@ void setSpamOutput(bool down) {
 }
 
 void disengageSpam() {
+    bool wasEngaged = g_spamEngaged;
     g_spamEngaged = false;
     g_spamRunner.restart();
     g_spamDetector.reset();
     setSpamOutput(false);
+    if (wasEngaged) {
+        Notification::create("Spam correcter stopped", NotificationIcon::Info)->show();
+        log::info("Macro Compare: spam correcter stopped after player inactivity");
+    }
 }
 
 void engageSpam() {
     g_spamEngaged = true;
     g_spamRunner.restart();
+    Notification::create("Spam correcter ACTIVE", NotificationIcon::Success)->show();
     log::info("Macro Compare: spam correcter engaged ({} phases for pattern '{}')",
         g_spamRunner.pattern.size(), g_spamSettings.patternText);
 }
