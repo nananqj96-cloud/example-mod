@@ -1,17 +1,59 @@
 {
-	"geode": "$GEODE_VERSION",
+	"geode": "5.8.2",
 	"gd": {
 		"win": "2.2081",
 		"android": "2.2081",
 		"mac": "2.2081",
 		"ios": "2.2081"
 	},
-	"id": "$MOD_ID",
-	"name": "$MOD_NAME",
-	"version": "$MOD_VERSION",
-	"developer": "$MOD_DEVELOPER",
-	"description": "$MOD_DESCRIPTION",
-	"dependencies": {
-		"geode.node-ids": ">=v1.23.3"
+	"id": "nananqj96.macro-compare",
+	"name": "Macro Compare",
+	"version": "v1.0.0",
+	"developer": "nananqj96",
+	"description": "Load a .gdr2 macro, tap along with it, and get a similarity score at 100% telling you how close your click pattern was to the macro's.",
+	"settings": {
+		"macro-file": {
+			"type": "file",
+			"name": "Macro file",
+			"description": "The .gdr2 macro you want to compare your clicks against. Click the button on the right to pick the file.",
+			"default": "",
+			"control": {
+				"dialog": "open",
+				"filters": [
+					{
+						"files": ["*.gdr2"],
+						"description": "GDR2 replays"
+					}
+				]
+			}
+		},
+		"click-key": {
+			"type": "string",
+			"name": "Your key",
+			"description": "The key you tap along with the macro. Examples: Space, A, F, K, Enter, LeftArrow. Single letters always work.",
+			"default": "Space"
+		},
+		"ghost-key": {
+			"type": "bool",
+			"name": "Ghost key",
+			"description": "Swallow the key before the game sees it, so tapping along cannot change the level while the macro plays it. Turn this off if you want your presses to control the player too.",
+			"default": true
+		},
+		"tolerance-ms": {
+			"type": "int",
+			"name": "Timing tolerance (ms)",
+			"description": "How far off a click can be and still count. A click that is dead on scores 100%, a click this many milliseconds off scores 0%.",
+			"default": 120,
+			"min": 20,
+			"max": 500
+		},
+		"physics-tps": {
+			"type": "int",
+			"name": "Your tick rate (TPS)",
+			"description": "Leave this at 240 unless you play with a TPS bypass. If you do, set it to the TPS you actually use so your presses get timed correctly.",
+			"default": 240,
+			"min": 60,
+			"max": 100000
+		}
 	}
 }
