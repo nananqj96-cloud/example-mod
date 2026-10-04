@@ -760,6 +760,7 @@ class $modify(MacroComparePlayLayer, PlayLayer) {
         g_run.myKey = readKeySetting();
 
         g_framesSinceSettingRefresh = 0;
+        refreshSpamSettings();
         disengageSpam();
 
         loadMacro();
@@ -776,9 +777,17 @@ class $modify(MacroComparePlayLayer, PlayLayer) {
 
         // every new attempt gets a fresh correcter too
         g_framesSinceSettingRefresh = 0;
+        refreshSpamSettings();
         disengageSpam();
 
         announceOnce();
+    }
+
+    // Drive spam correction from PlayLayer itself, independently of whether
+    // macro comparison is armed or a macro file is loaded.
+    void update(float dt) {
+        PlayLayer::update(dt);
+        spamFrame();
     }
 
     // leaving the level must never leave the corrected jump key stuck down
@@ -804,8 +813,6 @@ class $modify(MacroCompareBaseLayer, GJBaseGameLayer) {
             ++g_run.tick;
         }
 
-        // The spam correcter must run even when macro comparison is not armed.
-        spamFrame();
     }
 };
 
