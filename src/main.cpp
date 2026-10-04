@@ -649,6 +649,7 @@ bool g_spamEngaged = false;
 bool g_spamOutputDown = false;
 double g_spamLastPressMs = 0.0;
 int g_framesSinceSettingRefresh = 1000;
+bool g_spamSettingsInitialized = false;
 
 // The dispatcher hands us its own pointer the first time a key is pressed, so
 // we never have to guess at a singleton accessor.
@@ -682,6 +683,8 @@ void refreshSpamSettings() {
     g_spamRunner.pattern = spamfix::parsePattern(g_spamSettings.patternText);
     g_spamDetector.needed = std::clamp(g_spamSettings.alternations, 2, 10);
     g_spamDetector.windowMs = static_cast<double>(std::clamp(g_spamSettings.detectMs, 60, 1000));
+
+    g_spamSettingsInitialized = true;
 
     if (g_spamSettings.enabled && g_spamSettings.key1 == g_spamSettings.key2) {
         log::warn("Macro Compare: the two spam keys are the same key - the correcter needs two different keys");
@@ -797,10 +800,11 @@ class $modify(MacroCompareBaseLayer, GJBaseGameLayer) {
         GJBaseGameLayer::update(dt);
 
         auto playLayer = PlayLayer::get();
-        if (!playLayer || static_cast<GJBaseGameLayer*>(playLayer) != this) return;
+        if (playLayer && static_cast<GJBaseGameLayer*>(playLayer) == this && g_run.recording) {
+            ++g_run.tick;
+        }
 
-        if (g_run.recording) ++g_run.tick;
-
+        // The spam correcter must run even when macro comparison is not armed.
         spamFrame();
     }
 };
@@ -823,20 +827,27 @@ class $modify(MacroCompareKeyboard, CCKeyboardDispatcher) {
             if (ghostKeyEnabled()) return true;
         }
 
-        // spam correcter
+        // Load settings before the first keyboard event. Previously the first
+        // presses could arrive while the in-memory setting was still disabled.
+        if (!g_spamSettingsInitialized) refreshSpamSettings();
+
+        // spam correcter: source presses are observed internally, then swallowed
+        // only after a valid alternating burst has been detected.
         if (g_spamSettings.enabled && (key == g_spamSettings.key1 || key == g_spamSettings.key2)) {
             if (isKeyDown && !isKeyRepeat) {
                 auto now = nowMs();
-                g_spamLastPressMs = now;
-                g_spamDetector.note(key == g_spamSettings.key1 ? 0 : 1, now);
+                int which = key == g_spamSettings.key1 ? 0 : 1;
 
-                if (!g_spamEngaged && g_spamDetector.alternating()) {
-                    engageSpam();
-                }
+                // Once engaged, individual source presses never interrupt or
+                // restart the generated pattern. They only keep the active
+                // session alive. The timeout below is what disengages it.
+                g_spamLastPressMs = now;
+                g_spamDetector.note(which, now);
+                if (!g_spamEngaged && g_spamDetector.alternating()) engageSpam();
             }
 
-            // while engaged the presses are replaced by the pattern. Releases are
-            // always let through, so a key held from before can still be released.
+            // While active, block both source key-down and repeat events. Key-up
+            // is allowed through so a key held before engagement cannot stick.
             if (g_spamEngaged && isKeyDown) return true;
         }
 
