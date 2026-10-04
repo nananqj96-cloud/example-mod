@@ -1,18 +1,26 @@
 // ============================================================================
 //  Macro Compare - a Geode mod for Geometry Dash
 //
-//  Load a .gdr2 macro, tap along with it on your own key, and at 100% get a
-//  "similarity to the real level" percentage for your click pattern.
+//  Two features:
 //
-//  This mod does NOT play anything for you. It only reads a macro file and
-//  compares its input timeline with the key presses it saw from you.
+//   1. Macro compare - load a .gdr2 macro, tap along on your own key, and at
+//      100% get a "similarity to the real level" percentage for your clicks.
+//
+//   2. Spam correcter - watches two keys you pick. When you are alternate
+//      mashing them fast enough to count as spam, your presses are blocked and
+//      replaced with a clean, fully custom hold/release pattern.
+//
+//  The mod never plays a level for you: feature 1 only reads a macro file and
+//  compares it, feature 2 only cleans up inputs you are already making.
 //
 //  Everything is in this one file on purpose, so there is only one file to
 //  paste into the repository:
 //    Part 1 - the .gdr2 reader (matches GDReplayFormat / GDR version 2)
-//    Part 2 - mod state + settings helpers
-//    Part 3 - the score
-//    Part 4 - the hooks
+//    Part 2 - spam correcter logic (pure, testable)
+//    Part 3 - mod state + settings helpers
+//    Part 4 - the score
+//    Part 5 - the spam correcter, wired to the game
+//    Part 6 - the hooks
 // ============================================================================
 
 #include <Geode/Geode.hpp>
@@ -24,6 +32,7 @@
 #include <algorithm>
 #include <bit>
 #include <cctype>
+#include <chrono>
 #include <cmath>
 #include <cstdint>
 #include <filesystem>
@@ -43,8 +52,8 @@ using namespace geode::prelude;
 //
 //  Layout taken from the reference implementation (GDReplayFormat, "gdr2"
 //  branch), which is the format Mega Hack, xdBot, Eclipse and GD Mega Overlay
-//  export. Everything is little-endian-free: numbers are varints, floats are
-//  big-endian, strings are a varint length followed by raw bytes.
+//  export. Numbers are varints, floats are big-endian, strings are a varint
+//  length followed by raw bytes.
 // ============================================================================
 namespace gdr2 {
 
@@ -198,7 +207,120 @@ inline Macro parse(std::vector<std::uint8_t> const& bytes) {
 } // namespace gdr2
 
 // ============================================================================
-//  Part 2 - mod state
+//  Part 2 - spam correcter logic
+//
+//  No Geode calls in here on purpose, so it can be tested on its own:
+//    Pattern  - the "hold N frames, release M frames" loop
+//    Runner   - steps that loop one frame at a time
+//    Detector - decides whether you are actually alternate spamming
+// ============================================================================
+namespace spamfix {
+
+constexpr int kMaxPhases = 64;
+constexpr int kMaxPhaseFrames = 1000;
+
+struct Pattern {
+    std::vector<int> phases; // hold, release, hold, release, ... in frames
+
+    std::size_t size() const { return phases.size(); }
+    bool holdsAt(std::size_t index) const { return index % 2 == 0; }
+};
+
+// "10,10" -> hold 10 frames, release 10 frames, then start over.
+// "10"    -> the same thing. "5,5,3,3" -> two rhythms alternating.
+// Anything unreadable falls back to 10,10.
+inline Pattern parsePattern(std::string const& text) {
+    std::vector<int> values;
+    long long current = -1;
+
+    for (char c : text) {
+        if (c >= '0' && c <= '9') {
+            current = (current < 0 ? 0 : current) * 10 + (c - '0');
+            if (current > kMaxPhaseFrames) current = kMaxPhaseFrames;
+        } else if (current >= 0) {
+            values.push_back(static_cast<int>(current));
+            current = -1;
+        }
+    }
+    if (current >= 0) values.push_back(static_cast<int>(current));
+
+    std::vector<int> kept;
+    for (int value : values) {
+        if (value > 0) kept.push_back(std::min(value, kMaxPhaseFrames));
+    }
+
+    if (kept.empty()) kept.push_back(10);                  // nothing usable -> 10/10
+    if (kept.size() == 1) kept.push_back(kept.front());    // "10" means 10 on, 10 off
+    if (kept.size() % 2 != 0) kept.push_back(kept.back()); // always finish on a release
+    if (kept.size() > kMaxPhases) kept.resize(kMaxPhases);
+
+    Pattern pattern;
+    pattern.phases = std::move(kept);
+    return pattern;
+}
+
+// Steps the pattern one frame at a time and says whether the key should be held.
+struct Runner {
+    Pattern pattern = parsePattern("10,10");
+    std::size_t phase = 0;
+    int phaseFrames = 0;
+
+    void restart() {
+        phase = 0;
+        phaseFrames = 0;
+    }
+
+    bool outputWanted() const {
+        return pattern.phases.empty() ? false : pattern.holdsAt(phase);
+    }
+
+    void step() {
+        if (pattern.phases.empty()) return;
+        if (++phaseFrames >= pattern.phases[phase]) {
+            phaseFrames = 0;
+            phase = (phase + 1) % pattern.size();
+        }
+    }
+};
+
+struct Detector {
+    int needed = 4;          // presses that have to alternate in a row
+    double windowMs = 250.0; // and the longest gap allowed between them
+
+    struct Press {
+        int key = 0;
+        double timeMs = 0.0;
+    };
+
+    std::vector<Press> presses;
+
+    void reset() { presses.clear(); }
+
+    void note(int key, double timeMs) {
+        // anything older than the window can never be part of a spam burst
+        while (!presses.empty() && timeMs - presses.front().timeMs > windowMs) {
+            presses.erase(presses.begin());
+        }
+        presses.push_back({key, timeMs});
+        if (presses.size() > 64) presses.erase(presses.begin());
+    }
+
+    bool alternating() const {
+        if (static_cast<int>(presses.size()) < needed) return false;
+
+        auto start = presses.size() - static_cast<std::size_t>(needed);
+        for (std::size_t i = start; i + 1 < presses.size(); ++i) {
+            if (presses[i].key == presses[i + 1].key) return false;                 // same key twice
+            if (presses[i + 1].timeMs - presses[i].timeMs > windowMs) return false; // too slow
+        }
+        return true;
+    }
+};
+
+} // namespace spamfix
+
+// ============================================================================
+//  Part 3 - mod state + settings helpers
 // ============================================================================
 
 namespace {
@@ -280,7 +402,7 @@ std::optional<cocos2d::enumKeyCodes> parseKey(std::string const& name) {
     return std::nullopt;
 }
 
-// The key the player taps with, e.g. "Space", "K", "F5", "ArrowUp".
+// The key you tap along with, e.g. "Space", "K", "F5", "ArrowUp".
 cocos2d::enumKeyCodes readKeySetting() {
     auto name = Mod::get()->getSettingValue<std::string>("click-key");
 
@@ -383,7 +505,7 @@ void announceOnce() {
 } // namespace
 
 // ============================================================================
-//  Part 3 - the score
+//  Part 4 - the score
 //
 //  For every click in the macro we look for your closest click. Dead on scores
 //  100%, and being off by the whole tolerance scores 0%. The total is divided
@@ -500,7 +622,128 @@ void reportRun() {
 } // namespace
 
 // ============================================================================
-//  Part 4 - hooks
+//  Part 5 - the spam correcter, wired to the game
+//
+//  Detect alternate spam -> block those two keys -> play the pattern instead.
+//  The corrected presses are re-sent through the keyboard dispatcher, which is
+//  the exact same path your real keys take, so the jump lands like a normal
+//  press no matter which jump key you use.
+// ============================================================================
+
+namespace {
+
+struct SpamSettings {
+    bool enabled = false;
+    cocos2d::enumKeyCodes key1 = cocos2d::KEY_Q;
+    cocos2d::enumKeyCodes key2 = cocos2d::KEY_E;
+    cocos2d::enumKeyCodes output = cocos2d::KEY_Space;
+    std::string patternText = "10,10";
+    int detectMs = 250;
+    int alternations = 4;
+};
+
+SpamSettings g_spamSettings;
+spamfix::Runner g_spamRunner;
+spamfix::Detector g_spamDetector;
+bool g_spamEngaged = false;
+bool g_spamOutputDown = false;
+double g_spamLastPressMs = 0.0;
+int g_framesSinceSettingRefresh = 1000;
+
+// The dispatcher hands us its own pointer the first time a key is pressed, so
+// we never have to guess at a singleton accessor.
+CCKeyboardDispatcher* g_dispatcher = nullptr;
+
+// true while this mod is sending its own key events, so they are not treated
+// as the player's input
+bool g_synthesizing = false;
+
+double nowMs() {
+    using clock = std::chrono::steady_clock;
+    return std::chrono::duration<double, std::milli>(clock::now().time_since_epoch()).count();
+}
+
+cocos2d::enumKeyCodes readKeybindSetting(char const* key, cocos2d::enumKeyCodes fallback) {
+    auto binds = Mod::get()->getSettingValue<std::vector<Keybind>>(key);
+    if (!binds.empty()) return binds.front().key;
+    return fallback;
+}
+
+void refreshSpamSettings() {
+    g_spamSettings.enabled = Mod::get()->getSettingValue<bool>("spam-enabled");
+    g_spamSettings.detectMs = static_cast<int>(Mod::get()->getSettingValue<int64_t>("spam-detect-ms"));
+    g_spamSettings.alternations = static_cast<int>(Mod::get()->getSettingValue<int64_t>("spam-alternations"));
+    g_spamSettings.patternText = Mod::get()->getSettingValue<std::string>("spam-pattern");
+    g_spamSettings.key1 = readKeybindSetting("spam-key-1", cocos2d::KEY_Q);
+    g_spamSettings.key2 = readKeybindSetting("spam-key-2", cocos2d::KEY_E);
+    g_spamSettings.output = parseKey(Mod::get()->getSettingValue<std::string>("spam-output-key"))
+                                .value_or(cocos2d::KEY_Space);
+
+    g_spamRunner.pattern = spamfix::parsePattern(g_spamSettings.patternText);
+    g_spamDetector.needed = std::clamp(g_spamSettings.alternations, 2, 10);
+    g_spamDetector.windowMs = static_cast<double>(std::clamp(g_spamSettings.detectMs, 60, 1000));
+
+    if (g_spamSettings.enabled && g_spamSettings.key1 == g_spamSettings.key2) {
+        log::warn("Macro Compare: the two spam keys are the same key - the correcter needs two different keys");
+    }
+}
+
+void setSpamOutput(bool down) {
+    if (g_spamOutputDown == down) return;
+    g_spamOutputDown = down;
+
+    if (!g_dispatcher) {
+        log::warn("Macro Compare: no keyboard dispatcher yet, corrected input not sent");
+        return;
+    }
+
+    g_synthesizing = true;
+    g_dispatcher->dispatchKeyboardMSG(g_spamSettings.output, down, false, nowMs() / 1000.0);
+    g_synthesizing = false;
+}
+
+void disengageSpam() {
+    g_spamEngaged = false;
+    g_spamRunner.restart();
+    g_spamDetector.reset();
+    setSpamOutput(false);
+}
+
+void engageSpam() {
+    g_spamEngaged = true;
+    g_spamRunner.restart();
+    log::info("Macro Compare: spam correcter engaged ({} phases for pattern '{}')",
+        g_spamRunner.pattern.size(), g_spamSettings.patternText);
+}
+
+// Runs once per game frame while a level is playing.
+void spamFrame() {
+    if (--g_framesSinceSettingRefresh <= 0) {
+        g_framesSinceSettingRefresh = 60; // re-read the settings a few times a second
+        refreshSpamSettings();
+    }
+
+    if (!g_spamSettings.enabled) {
+        if (g_spamEngaged) disengageSpam();
+        return;
+    }
+
+    // stopped mashing? hand the keys back to the player
+    if (g_spamEngaged && nowMs() - g_spamLastPressMs > g_spamDetector.windowMs) {
+        disengageSpam();
+        return;
+    }
+
+    if (!g_spamEngaged) return;
+
+    setSpamOutput(g_spamRunner.outputWanted());
+    g_spamRunner.step();
+}
+
+} // namespace
+
+// ============================================================================
+//  Part 6 - hooks
 // ============================================================================
 
 class $modify(MacroComparePlayLayer, PlayLayer) {
@@ -512,6 +755,9 @@ class $modify(MacroComparePlayLayer, PlayLayer) {
         g_run.tick = 0;
         g_run.presses.clear();
         g_run.myKey = readKeySetting();
+
+        g_framesSinceSettingRefresh = 0;
+        disengageSpam();
 
         loadMacro();
         return true;
@@ -525,7 +771,17 @@ class $modify(MacroComparePlayLayer, PlayLayer) {
         g_run.myKey = readKeySetting();
         g_run.recording = g_run.macroLoaded && !m_isPracticeMode;
 
+        // every new attempt gets a fresh correcter too
+        g_framesSinceSettingRefresh = 0;
+        disengageSpam();
+
         announceOnce();
+    }
+
+    // leaving the level must never leave the corrected jump key stuck down
+    void onQuit() {
+        disengageSpam();
+        PlayLayer::onQuit();
     }
 
     void levelComplete() {
@@ -541,19 +797,47 @@ class $modify(MacroCompareBaseLayer, GJBaseGameLayer) {
         GJBaseGameLayer::update(dt);
 
         auto playLayer = PlayLayer::get();
-        if (g_run.recording && playLayer && static_cast<GJBaseGameLayer*>(playLayer) == this) {
-            ++g_run.tick;
-        }
+        if (!playLayer || static_cast<GJBaseGameLayer*>(playLayer) != this) return;
+
+        if (g_run.recording) ++g_run.tick;
+
+        spamFrame();
     }
 };
 
 class $modify(MacroCompareKeyboard, CCKeyboardDispatcher) {
     bool dispatchKeyboardMSG(cocos2d::enumKeyCodes key, bool isKeyDown, bool isKeyRepeat, double timestamp) {
+        // remember the dispatcher so the correcter can send its own events later
+        g_dispatcher = this;
+
+        // events this mod sends itself go straight through: no recording, no blocking
+        if (g_synthesizing) {
+            return CCKeyboardDispatcher::dispatchKeyboardMSG(key, isKeyDown, isKeyRepeat, timestamp);
+        }
+
+        // your taps for the macro comparison are recorded before anything is blocked
         if (g_run.recording && isKeyDown && !isKeyRepeat && key == g_run.myKey) {
             g_run.presses.push_back(g_run.tick);
 
             // Ghost mode: swallow the key so it never reaches the level.
             if (ghostKeyEnabled()) return true;
+        }
+
+        // spam correcter
+        if (g_spamSettings.enabled && (key == g_spamSettings.key1 || key == g_spamSettings.key2)) {
+            if (isKeyDown && !isKeyRepeat) {
+                auto now = nowMs();
+                g_spamLastPressMs = now;
+                g_spamDetector.note(key == g_spamSettings.key1 ? 0 : 1, now);
+
+                if (!g_spamEngaged && g_spamDetector.alternating()) {
+                    engageSpam();
+                }
+            }
+
+            // while engaged the presses are replaced by the pattern. Releases are
+            // always let through, so a key held from before can still be released.
+            if (g_spamEngaged && isKeyDown) return true;
         }
 
         return CCKeyboardDispatcher::dispatchKeyboardMSG(key, isKeyDown, isKeyRepeat, timestamp);
