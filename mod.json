@@ -8,9 +8,9 @@
 	},
 	"id": "nananqj96.macro-compare",
 	"name": "Macro Compare",
-	"version": "v1.0.0",
+	"version": "v1.1.0",
 	"developer": "nananqj96",
-	"description": "Load a .gdr2 macro, tap along with it, and get a similarity score at 100% telling you how close your click pattern was to the macro's.",
+	"description": "Load a .gdr2 macro, tap along with it, and get a similarity score at 100%. Also has a spam correcter that turns your alternate mashing into a clean, custom hold/release pattern.",
 	"settings": {
 		"macro-file": {
 			"type": "file",
@@ -54,6 +54,54 @@
 			"default": 240,
 			"min": 60,
 			"max": 100000
+		},
+		"spam-enabled": {
+			"type": "bool",
+			"name": "Spam correcter",
+			"description": "Watches the two alternate keys below. When you are mashing them fast enough to count as alternate spam, your presses on those keys are blocked and replaced with the clean pattern in the next setting.",
+			"default": false
+		},
+		"spam-key-1": {
+			"type": "keybind",
+			"name": "Spam correcter: alternate key 1",
+			"description": "First key of your alternate spam. Click this setting, then press the key you want.",
+			"default": "Q",
+			"category": "gameplay"
+		},
+		"spam-key-2": {
+			"type": "keybind",
+			"name": "Spam correcter: alternate key 2",
+			"description": "Second key of your alternate spam. Has to be a different key than key 1. Click this setting, then press the key you want.",
+			"default": "E",
+			"category": "gameplay"
+		},
+		"spam-pattern": {
+			"type": "string",
+			"name": "Spam correcter: corrected pattern",
+			"description": "Hold and release lengths in frames, alternating and looping. \"10,10\" = hold 10 frames, release 10 frames. \"5,5\" is faster. \"8,4\" is uneven. \"5,5,3,3\" alternates between two rhythms. A single number like \"6\" means hold 6, release 6.",
+			"default": "10,10"
+		},
+		"spam-output-key": {
+			"type": "string",
+			"name": "Spam correcter: output key",
+			"description": "Which key the corrected spam presses. Leave this as your jump key - Space is the GD default. Accepts Space, A, F, Up, LeftArrow and so on.",
+			"default": "Space"
+		},
+		"spam-detect-ms": {
+			"type": "int",
+			"name": "Spam correcter: detection window (ms)",
+			"description": "How fast you have to be alternating for it to count as spam. Tap slower than this and your presses are left alone. A pause longer than this also ends the corrected spam.",
+			"default": 250,
+			"min": 60,
+			"max": 1000
+		},
+		"spam-alternations": {
+			"type": "int",
+			"name": "Spam correcter: alternations needed",
+			"description": "How many presses in a row have to alternate between the two keys before the correcter takes over.",
+			"default": 4,
+			"min": 2,
+			"max": 10
 		}
 	}
 }
