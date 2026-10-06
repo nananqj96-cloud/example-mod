@@ -11,6 +11,8 @@ using namespace cocos2d;
 namespace {
 
 class HeartRateDisplay : public CCNode {
+    CCScale9Sprite* m_panel = nullptr;
+    CCDrawNode* m_border = nullptr;
     CCLabelTTF* m_heart = nullptr;
     CCLabelBMFont* m_bpm = nullptr;
     CCLabelBMFont* m_percent = nullptr;
@@ -29,6 +31,22 @@ class HeartRateDisplay : public CCNode {
         m_percent = CCLabelBMFont::create("0%", "bigFont.fnt");
         if (!m_heart || !m_bpm || !m_percent) return false;
 
+        // Black rounded monitor body, white outline, red heart and red digits.
+        m_panel = CCScale9Sprite::create("square02_001.png");
+        if (m_panel) {
+            m_panel->setContentSize({220.f, 64.f});
+            m_panel->setColor({0, 0, 0});
+            m_panel->setOpacity(235);
+            addChild(m_panel, -1);
+            m_panel->setPosition({110.f, 32.f});
+            m_border = CCDrawNode::create();
+            if (m_border) {
+                CCPoint corners[] = {{7.f, 7.f}, {213.f, 7.f}, {213.f, 57.f}, {7.f, 57.f}};
+                m_border->drawPolygon(corners, 4, {0.f, 0.f, 0.f, 0.f}, 3.f, {1.f, 1.f, 1.f, 1.f});
+                addChild(m_border, 2);
+            }
+        }
+
         m_heart->setColor({255, 70, 80});
         m_heart->setScale(.9f);
         m_bpm->setScale(.42f);
@@ -40,10 +58,10 @@ class HeartRateDisplay : public CCNode {
         addChild(m_bpm);
         addChild(m_percent);
         // The heart is directly next to the BPM value.
-        m_heart->setPosition({38.f, 38.f});
-        m_bpm->setPosition({48.f, 38.f});
-        m_percent->setPosition({180.f, 9.f});
-        setContentSize({190.f, 65.f});
+        m_heart->setPosition({39.f, 36.f});
+        m_bpm->setPosition({62.f, 36.f});
+        m_percent->setPosition({190.f, 10.f});
+        setContentSize({220.f, 64.f});
         return true;
     }
 
@@ -159,7 +177,7 @@ class $modify(FakeHeartRatePlayLayer, PlayLayer) {
         g_display = HeartRateDisplay::create();
         if (g_display) {
             auto size = CCDirector::sharedDirector()->getWinSize();
-            g_display->setPosition({size.width - 205.f, size.height - 78.f});
+            g_display->setPosition({size.width - 230.f, size.height - 82.f});
             addChild(g_display, 9999);
         }
         return true;
