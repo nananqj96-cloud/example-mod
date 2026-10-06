@@ -23,7 +23,7 @@ class HeartRateDisplay : public CCNode {
 
     bool init() {
         if (!CCNode::init()) return false;
-        m_heart = CCLabelBMFont::create("♥", "bigFont.fnt");
+        m_heart = CCLabelBMFont::create("<3", "bigFont.fnt");
         m_bpm = CCLabelBMFont::create("100 BPM", "bigFont.fnt");
         m_percent = CCLabelBMFont::create("0%", "bigFont.fnt");
         if (!m_heart || !m_bpm || !m_percent) return false;
@@ -89,9 +89,26 @@ public:
         m_frames = 0;
         chooseTarget(percent);
 
+        // Keep the display alive and moving even when the player remains in
+        // one percentage zone: real heart-rate monitors fluctuate continuously.
+        if (m_target == m_bpmValue) {
+            int low = m_zone == 0 ? setting("zone-1-min", 90) : m_zone == 1 ? setting("zone-2-min", 120) : setting("zone-3-min", 140);
+            int high = m_zone == 0 ? setting("zone-1-max", 110) : m_zone == 1 ? setting("zone-2-max", 140) : setting("zone-3-max", 220);
+            std::uniform_int_distribution<int> pick(std::min(low, high), std::max(low, high));
+            m_target = pick(m_rng);
+        }
+
         int speed = std::clamp(setting("change-speed", 3), 1, 20);
         if (m_bpmValue < m_target) m_bpmValue = std::min(m_bpmValue + speed, m_target);
         if (m_bpmValue > m_target) m_bpmValue = std::max(m_bpmValue - speed, m_target);
+
+        // Sensor hard bounds: the displayed BPM can never escape the active
+        // zone, even if a setting changes while the level is running.
+        int activeLow = m_zone == 0 ? setting("zone-1-min", 90) : m_zone == 1 ? setting("zone-2-min", 120) : setting("zone-3-min", 140);
+        int activeHigh = m_zone == 0 ? setting("zone-1-max", 110) : m_zone == 1 ? setting("zone-2-max", 140) : setting("zone-3-max", 220);
+        if (activeLow > activeHigh) std::swap(activeLow, activeHigh);
+        m_target = std::clamp(m_target, activeLow, activeHigh);
+        m_bpmValue = std::clamp(m_bpmValue, activeLow, activeHigh);
 
         m_bpm->setString((std::to_string(m_bpmValue) + " BPM").c_str());
         m_showPercent = Mod::get()->getSettingValue<bool>("show-percentage");
@@ -129,7 +146,19 @@ class $modify(FakeHeartRatePlayLayer, PlayLayer) {
             // can remain at zero during the PlayLayer update hook on some
             // 2.2081 builds.
             float livePercent = PlayLayer::getCurrentPercent();
+            if (livePercent >= 0.f && livePercent <= 1.01f) livePercent *= 100.f;
             int percent = std::clamp(static_cast<int>(livePercent + 0.5f), 0, 100);
+
+            // Prefer the game's own percentage label when available. This is
+            // the exact value Geometry Dash is showing to the player.
+            if (m_percentageLabel) {
+                auto text = std::string(m_percentageLabel->getString());
+                auto number = text.find_first_of("0123456789");
+                if (number != std::string::npos) {
+                    try { percent = std::clamp(std::stoi(text.substr(number)), 0, 100); }
+                    catch (...) {}
+                }
+            }
             g_display->tick(percent);
         }
     }
