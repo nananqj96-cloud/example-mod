@@ -95,10 +95,17 @@ class HeartRateDisplay : public CCNode {
         m_target = std::clamp(m_target, low, high);
     }
 
+    void applyScale() {
+        float scale = static_cast<float>(Mod::get()->getSettingValue<double>("monitor-scale"));
+        if (scale <= 0.f) scale = .7f;
+        scale = std::clamp(scale, .4f, 1.5f);
+        setScale(scale);
+    }
+
 public:
     static HeartRateDisplay* create() {
         auto ret = new HeartRateDisplay();
-        if (ret && ret->init()) { ret->autorelease(); return ret; }
+        if (ret && ret->init()) { ret->applyScale(); ret->autorelease(); return ret; }
         delete ret;
         return nullptr;
     }
