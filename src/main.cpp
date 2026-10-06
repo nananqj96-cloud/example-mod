@@ -18,6 +18,7 @@ class HeartRateDisplay : public CCNode {
     int m_target = 100;
     int m_zone = -1;
     int m_frames = 0;
+    int m_targetAge = 0;
     bool m_showPercent = true;
 
     bool init() {
@@ -32,13 +33,14 @@ class HeartRateDisplay : public CCNode {
         m_bpm->setScale(.42f);
         m_percent->setScale(.32f);
         m_heart->setAnchorPoint({1.f, .5f});
-        m_bpm->setAnchorPoint({1.f, .5f});
+        m_bpm->setAnchorPoint({0.f, .5f});
         m_percent->setAnchorPoint({1.f, .5f});
         addChild(m_heart);
         addChild(m_bpm);
         addChild(m_percent);
-        m_heart->setPosition({180.f, 48.f});
-        m_bpm->setPosition({180.f, 27.f});
+        // The heart is directly next to the BPM value.
+        m_heart->setPosition({38.f, 38.f});
+        m_bpm->setPosition({48.f, 38.f});
         m_percent->setPosition({180.f, 9.f});
         setContentSize({190.f, 65.f});
         return true;
@@ -53,14 +55,25 @@ class HeartRateDisplay : public CCNode {
         int first = std::clamp(setting("first-threshold", 40), 1, 98);
         int second = std::clamp(setting("second-threshold", 60), first + 1, 99);
         int zone = percent <= first ? 0 : (percent <= second ? 1 : 2);
-        if (zone == m_zone) return;
-
         int low = setting(zone == 0 ? "zone-1-min" : zone == 1 ? "zone-2-min" : "zone-3-min", 90);
         int high = setting(zone == 0 ? "zone-1-max" : zone == 1 ? "zone-2-max" : "zone-3-max", 110);
         if (low > high) std::swap(low, high);
-        std::uniform_int_distribution<int> pick(low, high);
-        m_target = pick(m_rng);
-        m_zone = zone;
+
+        // Select a fresh target when entering a zone and periodically while
+        // staying in it. Real heart-rate displays keep changing during a
+        // steady section instead of freezing at one number.
+        ++m_targetAge;
+        if (zone != m_zone || m_targetAge >= 18) {
+            std::uniform_int_distribution<int> pick(low, high);
+            m_target = pick(m_rng);
+            m_targetAge = 0;
+            m_zone = zone;
+        }
+
+        // Keep the current value inside the active zone if the user changed
+        // settings while playing.
+        m_bpmValue = std::clamp(m_bpmValue, low, high);
+        m_target = std::clamp(m_target, low, high);
     }
 
 public:
@@ -111,7 +124,14 @@ class $modify(FakeHeartRatePlayLayer, PlayLayer) {
         if (!g_display) return;
         bool enabled = Mod::get()->getSettingValue<bool>("enabled");
         g_display->setVisible(enabled);
-        if (enabled) g_display->tick(std::clamp(getCurrentPercentInt(), 0, 100));
+        if (enabled) {
+            // Use the live floating-point progress value. The integer accessor
+            // can remain at zero during the PlayLayer update hook on some
+            // 2.2081 builds.
+            float livePercent = PlayLayer::getCurrentPercent();
+            int percent = std::clamp(static_cast<int>(livePercent + 0.5f), 0, 100);
+            g_display->tick(percent);
+        }
     }
 
     void onQuit() {
