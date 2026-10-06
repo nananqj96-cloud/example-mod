@@ -14,12 +14,12 @@ class HeartRateDisplay : public CCNode {
     CCLabelTTF* m_heart = nullptr;
     CCLabelBMFont* m_bpm = nullptr;
     CCLabelBMFont* m_percent = nullptr;
-    std::mt19937 m_rng{std::random_device{}()};
     int m_bpmValue = 100;
     int m_target = 100;
     int m_zone = -1;
     int m_frames = 0;
     int m_targetAge = 0;
+    std::mt19937 m_rng{std::random_device{}()};
     bool m_showPercent = true;
 
     bool init() {
@@ -99,9 +99,13 @@ public:
             m_target = pick(m_rng);
         }
 
-        int speed = std::clamp(setting("change-speed", 3), 1, 20);
-        if (m_bpmValue < m_target) m_bpmValue = std::min(m_bpmValue + speed, m_target);
-        if (m_bpmValue > m_target) m_bpmValue = std::max(m_bpmValue - speed, m_target);
+        int speed = std::clamp(setting("change-speed", 7), 3, 20);
+        std::uniform_int_distribution<int> jump(3, speed);
+        int step = jump(m_rng);
+        int difference = std::abs(m_target - m_bpmValue);
+        if (difference < 3) step = difference;
+        if (m_bpmValue < m_target) m_bpmValue = std::min(m_bpmValue + step, m_target);
+        if (m_bpmValue > m_target) m_bpmValue = std::max(m_bpmValue - step, m_target);
 
         // Sensor hard bounds: the displayed BPM can never escape the active
         // zone, even if a setting changes while the level is running.
@@ -132,7 +136,8 @@ void updateHeartRateForPlayLayer(PlayLayer* layer) {
     if (!enabled) return;
 
     float livePercent = layer->getCurrentPercent();
-    if (livePercent >= 0.f && livePercent <= 1.01f) livePercent *= 100.f;
+    // Geode's PlayLayer::getCurrentPercent() is already 0..100.
+    // Do not multiply values below 1 by 100: 0.68 means 0.68%, not 68%.
     int percent = std::clamp(static_cast<int>(livePercent + 0.5f), 0, 100);
     g_display->tick(percent);
 }
