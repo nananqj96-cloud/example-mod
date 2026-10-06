@@ -17,7 +17,7 @@ class HeartRateDisplay : public CCNode {
     int m_bpmValue = 100;
     int m_target = 100;
     int m_zone = -1;
-    int m_frames = 0;
+    float m_elapsedSeconds = 0.f;
     int m_targetAge = 0;
     std::mt19937 m_rng{std::random_device{}()};
     bool m_showPercent = true;
@@ -85,9 +85,12 @@ public:
         return nullptr;
     }
 
-    void tick(int percent) {
-        if (++m_frames < setting("update-interval", 6)) return;
-        m_frames = 0;
+    void tick(int percent, float dt) {
+        // Real-time timer: this is one second of elapsed game time, not a
+        // fixed number of frames. It works consistently at 60, 144, 240 FPS.
+        m_elapsedSeconds += std::max(dt, 0.f);
+        if (m_elapsedSeconds < 1.f) return;
+        m_elapsedSeconds -= 1.f;
         chooseTarget(percent);
 
         // Keep the display alive and moving even when the player remains in
@@ -104,9 +107,8 @@ public:
         int highBound = m_zone == 0 ? setting("zone-1-max", 110) : m_zone == 1 ? setting("zone-2-max", 140) : setting("zone-3-max", 220);
         if (lowBound > highBound) std::swap(lowBound, highBound);
 
-        // Never emit a meaningless 1- or 2-BPM correction. If the target is
-        // too close, choose a new target at least 3 BPM away when the zone
-        // is wide enough. This produces visible sensor-like steps.
+        // Pick a target at least three BPM away. This loop prevents the
+        // display from ever producing a 1- or 2-BPM visible change.
         int difference = std::abs(m_target - m_bpmValue);
         if (difference < 3 && highBound - lowBound >= 6) {
             std::uniform_int_distribution<int> pick(lowBound, highBound);
@@ -115,20 +117,15 @@ public:
             difference = std::abs(m_target - m_bpmValue);
         }
 
-        std::uniform_int_distribution<int> jump(3, speed);
-        int step = std::min(jump(m_rng), difference);
-        // For a normal zone, difference is now at least 3, so step is never 1.
-        if (m_bpmValue < m_target) m_bpmValue = std::min(m_bpmValue + step, m_target);
-        if (m_bpmValue > m_target) m_bpmValue = std::max(m_bpmValue - step, m_target);
+        if (difference >= 3) {
+            std::uniform_int_distribution<int> jump(3, speed);
+            int step = jump(m_rng);
+            if (m_bpmValue < m_target) m_bpmValue = std::min(m_bpmValue + step, m_target);
+            else if (m_bpmValue > m_target) m_bpmValue = std::max(m_bpmValue - step, m_target);
+        }
 
-        // Sensor hard bounds: the displayed BPM can never escape the active
-        // zone, even if a setting changes while the level is running.
-        int activeLow = m_zone == 0 ? setting("zone-1-min", 90) : m_zone == 1 ? setting("zone-2-min", 120) : setting("zone-3-min", 140);
-        int activeHigh = m_zone == 0 ? setting("zone-1-max", 110) : m_zone == 1 ? setting("zone-2-max", 140) : setting("zone-3-max", 220);
-        if (activeLow > activeHigh) std::swap(activeLow, activeHigh);
-        m_target = std::clamp(m_target, activeLow, activeHigh);
-        m_bpmValue = std::clamp(m_bpmValue, activeLow, activeHigh);
-
+        // Hard bounds after movement.
+        m_bpmValue = std::clamp(m_bpmValue, lowBound, highBound);
         m_bpm->setString((std::to_string(m_bpmValue) + " BPM").c_str());
         m_showPercent = Mod::get()->getSettingValue<bool>("show-percentage");
         m_percent->setVisible(m_showPercent);
@@ -153,7 +150,7 @@ void updateHeartRateForPlayLayer(PlayLayer* layer) {
     // Geode's PlayLayer::getCurrentPercent() is already 0..100.
     // Do not multiply values below 1 by 100: 0.68 means 0.68%, not 68%.
     int percent = std::clamp(static_cast<int>(livePercent + 0.5f), 0, 100);
-    g_display->tick(percent);
+    g_display->tick(percent, dt);
 }
 
 class $modify(FakeHeartRatePlayLayer, PlayLayer) {
