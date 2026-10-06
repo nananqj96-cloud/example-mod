@@ -131,7 +131,7 @@ public:
         m_percent->setVisible(m_showPercent);
         m_percent->setString((std::to_string(percent) + "%").c_str());
 
-        float pulse = 1.f + .06f * std::sin(static_cast<float>(m_frames) * .5f);
+        float pulse = 1.f + .06f * std::sin(static_cast<float>(m_targetAge) * .35f);
         m_heart->setScale(.65f * pulse);
     }
 };
@@ -140,7 +140,7 @@ HeartRateDisplay* g_display = nullptr;
 
 }
 
-void updateHeartRateForPlayLayer(PlayLayer* layer) {
+void updateHeartRateForPlayLayer(PlayLayer* layer, float dt) {
     if (!g_display || !layer) return;
     bool enabled = Mod::get()->getSettingValue<bool>("enabled");
     g_display->setVisible(enabled);
@@ -181,7 +181,7 @@ class $modify(FakeHeartRateGameLayer, GJBaseGameLayer) {
         GJBaseGameLayer::update(dt);
         auto layer = PlayLayer::get();
         if (layer && static_cast<GJBaseGameLayer*>(layer) == this) {
-            updateHeartRateForPlayLayer(layer);
+            updateHeartRateForPlayLayer(layer, dt);
         }
     }
 };
