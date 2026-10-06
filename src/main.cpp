@@ -1,5 +1,6 @@
 #include <Geode/Geode.hpp>
 #include <Geode/modify/PlayLayer.hpp>
+#include <Geode/modify/GJBaseGameLayer.hpp>
 #include <algorithm>
 #include <random>
 #include <string>
@@ -10,7 +11,7 @@ using namespace cocos2d;
 namespace {
 
 class HeartRateDisplay : public CCNode {
-    CCLabelBMFont* m_heart = nullptr;
+    CCLabelTTF* m_heart = nullptr;
     CCLabelBMFont* m_bpm = nullptr;
     CCLabelBMFont* m_percent = nullptr;
     std::mt19937 m_rng{std::random_device{}()};
@@ -23,13 +24,13 @@ class HeartRateDisplay : public CCNode {
 
     bool init() {
         if (!CCNode::init()) return false;
-        m_heart = CCLabelBMFont::create("<3", "bigFont.fnt");
+        m_heart = CCLabelTTF::create("❤️", "Arial", 24.f);
         m_bpm = CCLabelBMFont::create("100 BPM", "bigFont.fnt");
         m_percent = CCLabelBMFont::create("0%", "bigFont.fnt");
         if (!m_heart || !m_bpm || !m_percent) return false;
 
         m_heart->setColor({255, 70, 80});
-        m_heart->setScale(.65f);
+        m_heart->setScale(.9f);
         m_bpm->setScale(.42f);
         m_percent->setScale(.32f);
         m_heart->setAnchorPoint({1.f, .5f});
@@ -124,6 +125,18 @@ HeartRateDisplay* g_display = nullptr;
 
 }
 
+void updateHeartRateForPlayLayer(PlayLayer* layer) {
+    if (!g_display || !layer) return;
+    bool enabled = Mod::get()->getSettingValue<bool>("enabled");
+    g_display->setVisible(enabled);
+    if (!enabled) return;
+
+    float livePercent = layer->getCurrentPercent();
+    if (livePercent >= 0.f && livePercent <= 1.01f) livePercent *= 100.f;
+    int percent = std::clamp(static_cast<int>(livePercent + 0.5f), 0, 100);
+    g_display->tick(percent);
+}
+
 class $modify(FakeHeartRatePlayLayer, PlayLayer) {
     bool init(GJGameLevel* level, bool useReplay, bool dontCreateObjects) {
         if (!PlayLayer::init(level, useReplay, dontCreateObjects)) return false;
@@ -138,33 +151,21 @@ class $modify(FakeHeartRatePlayLayer, PlayLayer) {
 
     void update(float dt) {
         PlayLayer::update(dt);
-        if (!g_display) return;
-        bool enabled = Mod::get()->getSettingValue<bool>("enabled");
-        g_display->setVisible(enabled);
-        if (enabled) {
-            // Use the live floating-point progress value. The integer accessor
-            // can remain at zero during the PlayLayer update hook on some
-            // 2.2081 builds.
-            float livePercent = PlayLayer::getCurrentPercent();
-            if (livePercent >= 0.f && livePercent <= 1.01f) livePercent *= 100.f;
-            int percent = std::clamp(static_cast<int>(livePercent + 0.5f), 0, 100);
-
-            // Prefer the game's own percentage label when available. This is
-            // the exact value Geometry Dash is showing to the player.
-            if (m_percentageLabel) {
-                auto text = std::string(m_percentageLabel->getString());
-                auto number = text.find_first_of("0123456789");
-                if (number != std::string::npos) {
-                    try { percent = std::clamp(std::stoi(text.substr(number)), 0, 100); }
-                    catch (...) {}
-                }
-            }
-            g_display->tick(percent);
-        }
     }
 
     void onQuit() {
         g_display = nullptr;
         PlayLayer::onQuit();
+    }
+};
+
+
+class $modify(FakeHeartRateGameLayer, GJBaseGameLayer) {
+    void update(float dt) {
+        GJBaseGameLayer::update(dt);
+        auto layer = PlayLayer::get();
+        if (layer && static_cast<GJBaseGameLayer*>(layer) == this) {
+            updateHeartRateForPlayLayer(layer);
+        }
     }
 };
