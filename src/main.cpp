@@ -99,11 +99,25 @@ public:
             m_target = pick(m_rng);
         }
 
-        int speed = std::clamp(setting("change-speed", 7), 3, 20);
-        std::uniform_int_distribution<int> jump(3, speed);
-        int step = jump(m_rng);
+        int speed = std::clamp(setting("change-speed", 8), 8, 20);
+        int lowBound = m_zone == 0 ? setting("zone-1-min", 90) : m_zone == 1 ? setting("zone-2-min", 120) : setting("zone-3-min", 140);
+        int highBound = m_zone == 0 ? setting("zone-1-max", 110) : m_zone == 1 ? setting("zone-2-max", 140) : setting("zone-3-max", 220);
+        if (lowBound > highBound) std::swap(lowBound, highBound);
+
+        // Never emit a meaningless 1- or 2-BPM correction. If the target is
+        // too close, choose a new target at least 3 BPM away when the zone
+        // is wide enough. This produces visible sensor-like steps.
         int difference = std::abs(m_target - m_bpmValue);
-        if (difference < 3) step = difference;
+        if (difference < 3 && highBound - lowBound >= 6) {
+            std::uniform_int_distribution<int> pick(lowBound, highBound);
+            do { m_target = pick(m_rng); }
+            while (std::abs(m_target - m_bpmValue) < 3);
+            difference = std::abs(m_target - m_bpmValue);
+        }
+
+        std::uniform_int_distribution<int> jump(3, speed);
+        int step = std::min(jump(m_rng), difference);
+        // For a normal zone, difference is now at least 3, so step is never 1.
         if (m_bpmValue < m_target) m_bpmValue = std::min(m_bpmValue + step, m_target);
         if (m_bpmValue > m_target) m_bpmValue = std::max(m_bpmValue - step, m_target);
 
