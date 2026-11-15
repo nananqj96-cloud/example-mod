@@ -1,23 +1,23 @@
-# Template
-This is where she makes a mod.
+# bunnythekenzo
 
-<img src="logo.png" width="150" alt="the mod's logo" />
+A Fabric client mod for Minecraft 1.21.11.
 
-*Update logo.png to change your mod's icon (please)*
+## Build
 
-## Getting started
-We recommend heading over to [the getting started section on our docs](https://docs.geode-sdk.org/getting-started/) for useful info on what to do next.
+- Install JDK 21.
+- On macOS/Linux: `./gradlew build`
+- On Windows: `gradlew.bat build`
 
-## Build instructions
-For more info, see [our docs](https://docs.geode-sdk.org/getting-started/create-mod#build)
-```sh
-# Assuming you have the Geode CLI set up already
-geode build
-```
+The mod JAR is written to `build/libs/`. Install it with Fabric Loader 0.19 or newer and Fabric API for Minecraft 1.21.11.
 
-# Resources
-* [Geode SDK Documentation](https://docs.geode-sdk.org/)
-* [Geode SDK Source Code](https://github.com/geode-sdk/geode/)
-* [Geode CLI](https://github.com/geode-sdk/cli)
-* [Bindings](https://github.com/geode-sdk/bindings/)
-* [Dev Tools](https://github.com/geode-sdk/DevTools)
+## Spotify HUD
+
+The Spotify HUD defaults to **Demo** and does not launch another process. Choose **Auto** in the HUD's **Source** setting to use the real Spotify session on Windows. That opt-in starts the bundled local PowerShell bridge (with process-scoped `-ExecutionPolicy Bypass`), which reads the active Spotify track/artwork and handles the HUD's playback controls. It writes the bridge script and artwork under the Fabric config directory, removes the script on normal client shutdown, and makes no network requests.
+
+## Network behavior
+
+- Item-worth data is fetched from `donutsmpstats.com` with a GET request.
+- Skin lookup uses Mojang's public profile/session APIs for the username entered in the skin setting.
+- Spawner-protection alerts are sent only if the user supplies a webhook URL; the default is blank.
+
+See [SECURITY.md](SECURITY.md) for the source review scope and limitations.

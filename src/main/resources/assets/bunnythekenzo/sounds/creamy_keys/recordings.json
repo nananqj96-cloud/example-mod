@@ -1,0 +1,585 @@
+{
+  "sample_rate": 48000,
+  "sources_sha256": {
+    "Creamy VS Clacky VS Thocky (2024 Edition).mp3": "cfb9e21cce35a83f788b35280650d6b0dff5e7c29fc310cc8dc9032a4d3948bd",
+    "Schermopname 2026-09-07 165557.mp3": "eebc8ccf889de6403ab0c341e1afc34e2b235bd06657b14e84628b2f27d10373"
+  },
+  "samples": {
+    "creamy/press_01": {
+      "source": "Creamy VS Clacky VS Thocky (2024 Edition).mp3",
+      "start_seconds": 0.084,
+      "end_seconds": 0.127,
+      "duration_ms": 48.0
+    },
+    "creamy/press_02": {
+      "source": "Creamy VS Clacky VS Thocky (2024 Edition).mp3",
+      "start_seconds": 0.854,
+      "end_seconds": 0.898,
+      "duration_ms": 49.0
+    },
+    "creamy/press_03": {
+      "source": "Creamy VS Clacky VS Thocky (2024 Edition).mp3",
+      "start_seconds": 1.224,
+      "end_seconds": 1.281,
+      "duration_ms": 62.0
+    },
+    "creamy/press_04": {
+      "source": "Creamy VS Clacky VS Thocky (2024 Edition).mp3",
+      "start_seconds": 4.301,
+      "end_seconds": 4.326,
+      "duration_ms": 30.0
+    },
+    "creamy/press_05": {
+      "source": "Creamy VS Clacky VS Thocky (2024 Edition).mp3",
+      "start_seconds": 4.695,
+      "end_seconds": 4.73,
+      "duration_ms": 40.0
+    },
+    "creamy/press_06": {
+      "source": "Creamy VS Clacky VS Thocky (2024 Edition).mp3",
+      "start_seconds": 5.423,
+      "end_seconds": 5.464,
+      "duration_ms": 46.0
+    },
+    "creamy/press_07": {
+      "source": "Creamy VS Clacky VS Thocky (2024 Edition).mp3",
+      "start_seconds": 6.547,
+      "end_seconds": 6.593,
+      "duration_ms": 51.0
+    },
+    "creamy/press_08": {
+      "source": "Creamy VS Clacky VS Thocky (2024 Edition).mp3",
+      "start_seconds": 6.683,
+      "end_seconds": 6.723,
+      "duration_ms": 45.0
+    },
+    "creamy/press_09": {
+      "source": "Creamy VS Clacky VS Thocky (2024 Edition).mp3",
+      "start_seconds": 6.766,
+      "end_seconds": 6.792,
+      "duration_ms": 31.0
+    },
+    "creamy/press_10": {
+      "source": "Creamy VS Clacky VS Thocky (2024 Edition).mp3",
+      "start_seconds": 6.953,
+      "end_seconds": 6.979,
+      "duration_ms": 31.0
+    },
+    "creamy/press_11": {
+      "source": "Creamy VS Clacky VS Thocky (2024 Edition).mp3",
+      "start_seconds": 7.361,
+      "end_seconds": 7.403,
+      "duration_ms": 47.0
+    },
+    "creamy/press_12": {
+      "source": "Creamy VS Clacky VS Thocky (2024 Edition).mp3",
+      "start_seconds": 7.489,
+      "end_seconds": 7.516,
+      "duration_ms": 32.0
+    },
+    "creamy/release_01": {
+      "source": "Creamy VS Clacky VS Thocky (2024 Edition).mp3",
+      "start_seconds": 0.832,
+      "end_seconds": 0.851,
+      "duration_ms": 24.0
+    },
+    "creamy/release_02": {
+      "source": "Creamy VS Clacky VS Thocky (2024 Edition).mp3",
+      "start_seconds": 1.497,
+      "end_seconds": 1.52,
+      "duration_ms": 28.0
+    },
+    "creamy/release_03": {
+      "source": "Creamy VS Clacky VS Thocky (2024 Edition).mp3",
+      "start_seconds": 1.55,
+      "end_seconds": 1.574,
+      "duration_ms": 29.0
+    },
+    "creamy/release_04": {
+      "source": "Creamy VS Clacky VS Thocky (2024 Edition).mp3",
+      "start_seconds": 2.27,
+      "end_seconds": 2.293,
+      "duration_ms": 28.0
+    },
+    "creamy/release_05": {
+      "source": "Creamy VS Clacky VS Thocky (2024 Edition).mp3",
+      "start_seconds": 3.681,
+      "end_seconds": 3.705,
+      "duration_ms": 29.0
+    },
+    "creamy/release_06": {
+      "source": "Creamy VS Clacky VS Thocky (2024 Edition).mp3",
+      "start_seconds": 3.802,
+      "end_seconds": 3.825,
+      "duration_ms": 28.0
+    },
+    "creamy/release_07": {
+      "source": "Creamy VS Clacky VS Thocky (2024 Edition).mp3",
+      "start_seconds": 3.956,
+      "end_seconds": 3.979,
+      "duration_ms": 28.0
+    },
+    "creamy/release_08": {
+      "source": "Creamy VS Clacky VS Thocky (2024 Edition).mp3",
+      "start_seconds": 4.878,
+      "end_seconds": 4.903,
+      "duration_ms": 30.0
+    },
+    "creamy/release_09": {
+      "source": "Creamy VS Clacky VS Thocky (2024 Edition).mp3",
+      "start_seconds": 5.227,
+      "end_seconds": 5.25,
+      "duration_ms": 28.0
+    },
+    "creamy/release_10": {
+      "source": "Creamy VS Clacky VS Thocky (2024 Edition).mp3",
+      "start_seconds": 7.137,
+      "end_seconds": 7.16,
+      "duration_ms": 28.0
+    },
+    "creamy/release_11": {
+      "source": "Creamy VS Clacky VS Thocky (2024 Edition).mp3",
+      "start_seconds": 7.224,
+      "end_seconds": 7.249,
+      "duration_ms": 30.0
+    },
+    "creamy/release_12": {
+      "source": "Creamy VS Clacky VS Thocky (2024 Edition).mp3",
+      "start_seconds": 7.75,
+      "end_seconds": 7.781,
+      "duration_ms": 36.0
+    },
+    "clacky/press_01": {
+      "source": "Creamy VS Clacky VS Thocky (2024 Edition).mp3",
+      "start_seconds": 10.505,
+      "end_seconds": 10.548,
+      "duration_ms": 48.0
+    },
+    "clacky/press_02": {
+      "source": "Creamy VS Clacky VS Thocky (2024 Edition).mp3",
+      "start_seconds": 10.922,
+      "end_seconds": 10.947,
+      "duration_ms": 30.0
+    },
+    "clacky/press_03": {
+      "source": "Creamy VS Clacky VS Thocky (2024 Edition).mp3",
+      "start_seconds": 12.767,
+      "end_seconds": 12.811,
+      "duration_ms": 49.0
+    },
+    "clacky/press_04": {
+      "source": "Creamy VS Clacky VS Thocky (2024 Edition).mp3",
+      "start_seconds": 13.839,
+      "end_seconds": 13.875,
+      "duration_ms": 41.0
+    },
+    "clacky/press_05": {
+      "source": "Creamy VS Clacky VS Thocky (2024 Edition).mp3",
+      "start_seconds": 14.303,
+      "end_seconds": 14.337,
+      "duration_ms": 39.0
+    },
+    "clacky/press_06": {
+      "source": "Creamy VS Clacky VS Thocky (2024 Edition).mp3",
+      "start_seconds": 14.821,
+      "end_seconds": 14.861,
+      "duration_ms": 45.0
+    },
+    "clacky/press_07": {
+      "source": "Creamy VS Clacky VS Thocky (2024 Edition).mp3",
+      "start_seconds": 15.739,
+      "end_seconds": 15.783,
+      "duration_ms": 49.0
+    },
+    "clacky/press_08": {
+      "source": "Creamy VS Clacky VS Thocky (2024 Edition).mp3",
+      "start_seconds": 16.264,
+      "end_seconds": 16.309,
+      "duration_ms": 50.0
+    },
+    "clacky/press_09": {
+      "source": "Creamy VS Clacky VS Thocky (2024 Edition).mp3",
+      "start_seconds": 16.394,
+      "end_seconds": 16.437,
+      "duration_ms": 48.0
+    },
+    "clacky/press_10": {
+      "source": "Creamy VS Clacky VS Thocky (2024 Edition).mp3",
+      "start_seconds": 17.303,
+      "end_seconds": 17.338,
+      "duration_ms": 40.0
+    },
+    "clacky/press_11": {
+      "source": "Creamy VS Clacky VS Thocky (2024 Edition).mp3",
+      "start_seconds": 17.863,
+      "end_seconds": 17.901,
+      "duration_ms": 43.0
+    },
+    "clacky/press_12": {
+      "source": "Creamy VS Clacky VS Thocky (2024 Edition).mp3",
+      "start_seconds": 19.439,
+      "end_seconds": 19.48,
+      "duration_ms": 46.0
+    },
+    "clacky/release_01": {
+      "source": "Creamy VS Clacky VS Thocky (2024 Edition).mp3",
+      "start_seconds": 10.973,
+      "end_seconds": 10.991,
+      "duration_ms": 23.0
+    },
+    "clacky/release_02": {
+      "source": "Creamy VS Clacky VS Thocky (2024 Edition).mp3",
+      "start_seconds": 11.125,
+      "end_seconds": 11.149,
+      "duration_ms": 29.0
+    },
+    "clacky/release_03": {
+      "source": "Creamy VS Clacky VS Thocky (2024 Edition).mp3",
+      "start_seconds": 11.533,
+      "end_seconds": 11.558,
+      "duration_ms": 30.0
+    },
+    "clacky/release_04": {
+      "source": "Creamy VS Clacky VS Thocky (2024 Edition).mp3",
+      "start_seconds": 13.014,
+      "end_seconds": 13.039,
+      "duration_ms": 30.0
+    },
+    "clacky/release_05": {
+      "source": "Creamy VS Clacky VS Thocky (2024 Edition).mp3",
+      "start_seconds": 14.007,
+      "end_seconds": 14.025,
+      "duration_ms": 23.0
+    },
+    "clacky/release_06": {
+      "source": "Creamy VS Clacky VS Thocky (2024 Edition).mp3",
+      "start_seconds": 14.628,
+      "end_seconds": 14.654,
+      "duration_ms": 31.0
+    },
+    "clacky/release_07": {
+      "source": "Creamy VS Clacky VS Thocky (2024 Edition).mp3",
+      "start_seconds": 16.616,
+      "end_seconds": 16.639,
+      "duration_ms": 28.0
+    },
+    "clacky/release_08": {
+      "source": "Creamy VS Clacky VS Thocky (2024 Edition).mp3",
+      "start_seconds": 17.083,
+      "end_seconds": 17.106,
+      "duration_ms": 28.0
+    },
+    "clacky/release_09": {
+      "source": "Creamy VS Clacky VS Thocky (2024 Edition).mp3",
+      "start_seconds": 17.38,
+      "end_seconds": 17.415,
+      "duration_ms": 40.0
+    },
+    "clacky/release_10": {
+      "source": "Creamy VS Clacky VS Thocky (2024 Edition).mp3",
+      "start_seconds": 18.927,
+      "end_seconds": 18.952,
+      "duration_ms": 30.0
+    },
+    "clacky/release_11": {
+      "source": "Creamy VS Clacky VS Thocky (2024 Edition).mp3",
+      "start_seconds": 19.079,
+      "end_seconds": 19.104,
+      "duration_ms": 30.0
+    },
+    "clacky/release_12": {
+      "source": "Creamy VS Clacky VS Thocky (2024 Edition).mp3",
+      "start_seconds": 19.59,
+      "end_seconds": 19.615,
+      "duration_ms": 30.0
+    },
+    "thocky/press_01": {
+      "source": "Creamy VS Clacky VS Thocky (2024 Edition).mp3",
+      "start_seconds": 21.062,
+      "end_seconds": 21.109,
+      "duration_ms": 52.0
+    },
+    "thocky/press_02": {
+      "source": "Creamy VS Clacky VS Thocky (2024 Edition).mp3",
+      "start_seconds": 22.435,
+      "end_seconds": 22.468,
+      "duration_ms": 38.0
+    },
+    "thocky/press_03": {
+      "source": "Creamy VS Clacky VS Thocky (2024 Edition).mp3",
+      "start_seconds": 22.987,
+      "end_seconds": 23.021,
+      "duration_ms": 39.0
+    },
+    "thocky/press_04": {
+      "source": "Creamy VS Clacky VS Thocky (2024 Edition).mp3",
+      "start_seconds": 23.738,
+      "end_seconds": 23.775,
+      "duration_ms": 42.0
+    },
+    "thocky/press_05": {
+      "source": "Creamy VS Clacky VS Thocky (2024 Edition).mp3",
+      "start_seconds": 24.103,
+      "end_seconds": 24.133,
+      "duration_ms": 35.0
+    },
+    "thocky/press_06": {
+      "source": "Creamy VS Clacky VS Thocky (2024 Edition).mp3",
+      "start_seconds": 25.138,
+      "end_seconds": 25.172,
+      "duration_ms": 39.0
+    },
+    "thocky/press_07": {
+      "source": "Creamy VS Clacky VS Thocky (2024 Edition).mp3",
+      "start_seconds": 25.849,
+      "end_seconds": 25.889,
+      "duration_ms": 45.0
+    },
+    "thocky/press_08": {
+      "source": "Creamy VS Clacky VS Thocky (2024 Edition).mp3",
+      "start_seconds": 26.065,
+      "end_seconds": 26.092,
+      "duration_ms": 32.0
+    },
+    "thocky/press_09": {
+      "source": "Creamy VS Clacky VS Thocky (2024 Edition).mp3",
+      "start_seconds": 26.753,
+      "end_seconds": 26.787,
+      "duration_ms": 39.0
+    },
+    "thocky/press_10": {
+      "source": "Creamy VS Clacky VS Thocky (2024 Edition).mp3",
+      "start_seconds": 28.068,
+      "end_seconds": 28.102,
+      "duration_ms": 39.0
+    },
+    "thocky/press_11": {
+      "source": "Creamy VS Clacky VS Thocky (2024 Edition).mp3",
+      "start_seconds": 28.59,
+      "end_seconds": 28.624,
+      "duration_ms": 39.0
+    },
+    "thocky/press_12": {
+      "source": "Creamy VS Clacky VS Thocky (2024 Edition).mp3",
+      "start_seconds": 29.075,
+      "end_seconds": 29.103,
+      "duration_ms": 33.0
+    },
+    "thocky/release_01": {
+      "source": "Creamy VS Clacky VS Thocky (2024 Edition).mp3",
+      "start_seconds": 20.611,
+      "end_seconds": 20.635,
+      "duration_ms": 29.0
+    },
+    "thocky/release_02": {
+      "source": "Creamy VS Clacky VS Thocky (2024 Edition).mp3",
+      "start_seconds": 20.944,
+      "end_seconds": 20.967,
+      "duration_ms": 28.0
+    },
+    "thocky/release_03": {
+      "source": "Creamy VS Clacky VS Thocky (2024 Edition).mp3",
+      "start_seconds": 22.134,
+      "end_seconds": 22.159,
+      "duration_ms": 30.0
+    },
+    "thocky/release_04": {
+      "source": "Creamy VS Clacky VS Thocky (2024 Edition).mp3",
+      "start_seconds": 22.68,
+      "end_seconds": 22.704,
+      "duration_ms": 29.0
+    },
+    "thocky/release_05": {
+      "source": "Creamy VS Clacky VS Thocky (2024 Edition).mp3",
+      "start_seconds": 22.749,
+      "end_seconds": 22.781,
+      "duration_ms": 37.0
+    },
+    "thocky/release_06": {
+      "source": "Creamy VS Clacky VS Thocky (2024 Edition).mp3",
+      "start_seconds": 23.034,
+      "end_seconds": 23.058,
+      "duration_ms": 29.0
+    },
+    "thocky/release_07": {
+      "source": "Creamy VS Clacky VS Thocky (2024 Edition).mp3",
+      "start_seconds": 24.29,
+      "end_seconds": 24.31,
+      "duration_ms": 25.0
+    },
+    "thocky/release_08": {
+      "source": "Creamy VS Clacky VS Thocky (2024 Edition).mp3",
+      "start_seconds": 26.216,
+      "end_seconds": 26.24,
+      "duration_ms": 29.0
+    },
+    "thocky/release_09": {
+      "source": "Creamy VS Clacky VS Thocky (2024 Edition).mp3",
+      "start_seconds": 27.424,
+      "end_seconds": 27.445,
+      "duration_ms": 26.0
+    },
+    "thocky/release_10": {
+      "source": "Creamy VS Clacky VS Thocky (2024 Edition).mp3",
+      "start_seconds": 28.147,
+      "end_seconds": 28.172,
+      "duration_ms": 30.0
+    },
+    "thocky/release_11": {
+      "source": "Creamy VS Clacky VS Thocky (2024 Edition).mp3",
+      "start_seconds": 29.557,
+      "end_seconds": 29.583,
+      "duration_ms": 31.0
+    },
+    "thocky/release_12": {
+      "source": "Creamy VS Clacky VS Thocky (2024 Edition).mp3",
+      "start_seconds": 29.873,
+      "end_seconds": 29.9,
+      "duration_ms": 32.0
+    },
+    "honey_creamy/press_01": {
+      "source": "Schermopname 2026-09-07 165557.mp3",
+      "start_seconds": 0.219,
+      "end_seconds": 0.25,
+      "duration_ms": 36.0
+    },
+    "honey_creamy/press_02": {
+      "source": "Schermopname 2026-09-07 165557.mp3",
+      "start_seconds": 0.275,
+      "end_seconds": 0.302,
+      "duration_ms": 32.0
+    },
+    "honey_creamy/press_03": {
+      "source": "Schermopname 2026-09-07 165557.mp3",
+      "start_seconds": 1.853,
+      "end_seconds": 1.903,
+      "duration_ms": 55.0
+    },
+    "honey_creamy/press_04": {
+      "source": "Schermopname 2026-09-07 165557.mp3",
+      "start_seconds": 7.344,
+      "end_seconds": 7.378,
+      "duration_ms": 39.0
+    },
+    "honey_creamy/press_05": {
+      "source": "Schermopname 2026-09-07 165557.mp3",
+      "start_seconds": 7.719,
+      "end_seconds": 7.787,
+      "duration_ms": 73.0
+    },
+    "honey_creamy/press_06": {
+      "source": "Schermopname 2026-09-07 165557.mp3",
+      "start_seconds": 14.043,
+      "end_seconds": 14.075,
+      "duration_ms": 37.0
+    },
+    "honey_creamy/press_07": {
+      "source": "Schermopname 2026-09-07 165557.mp3",
+      "start_seconds": 14.078,
+      "end_seconds": 14.11,
+      "duration_ms": 37.0
+    },
+    "honey_creamy/press_08": {
+      "source": "Schermopname 2026-09-07 165557.mp3",
+      "start_seconds": 14.148,
+      "end_seconds": 14.208,
+      "duration_ms": 65.0
+    },
+    "honey_creamy/press_09": {
+      "source": "Schermopname 2026-09-07 165557.mp3",
+      "start_seconds": 15.685,
+      "end_seconds": 15.728,
+      "duration_ms": 48.0
+    },
+    "honey_creamy/press_10": {
+      "source": "Schermopname 2026-09-07 165557.mp3",
+      "start_seconds": 15.731,
+      "end_seconds": 15.763,
+      "duration_ms": 37.0
+    },
+    "honey_creamy/press_11": {
+      "source": "Schermopname 2026-09-07 165557.mp3",
+      "start_seconds": 16.091,
+      "end_seconds": 16.131,
+      "duration_ms": 45.0
+    },
+    "honey_creamy/press_12": {
+      "source": "Schermopname 2026-09-07 165557.mp3",
+      "start_seconds": 17.706,
+      "end_seconds": 17.771,
+      "duration_ms": 70.0
+    },
+    "honey_creamy/release_01": {
+      "source": "Schermopname 2026-09-07 165557.mp3",
+      "start_seconds": 0.83,
+      "end_seconds": 0.855,
+      "duration_ms": 30.0
+    },
+    "honey_creamy/release_02": {
+      "source": "Schermopname 2026-09-07 165557.mp3",
+      "start_seconds": 2.763,
+      "end_seconds": 2.79,
+      "duration_ms": 32.0
+    },
+    "honey_creamy/release_03": {
+      "source": "Schermopname 2026-09-07 165557.mp3",
+      "start_seconds": 3.044,
+      "end_seconds": 3.075,
+      "duration_ms": 36.0
+    },
+    "honey_creamy/release_04": {
+      "source": "Schermopname 2026-09-07 165557.mp3",
+      "start_seconds": 6.082,
+      "end_seconds": 6.105,
+      "duration_ms": 28.0
+    },
+    "honey_creamy/release_05": {
+      "source": "Schermopname 2026-09-07 165557.mp3",
+      "start_seconds": 8.016,
+      "end_seconds": 8.046,
+      "duration_ms": 35.0
+    },
+    "honey_creamy/release_06": {
+      "source": "Schermopname 2026-09-07 165557.mp3",
+      "start_seconds": 10.304,
+      "end_seconds": 10.329,
+      "duration_ms": 30.0
+    },
+    "honey_creamy/release_07": {
+      "source": "Schermopname 2026-09-07 165557.mp3",
+      "start_seconds": 12.774,
+      "end_seconds": 12.797,
+      "duration_ms": 28.0
+    },
+    "honey_creamy/release_08": {
+      "source": "Schermopname 2026-09-07 165557.mp3",
+      "start_seconds": 14.0,
+      "end_seconds": 14.024,
+      "duration_ms": 29.0
+    },
+    "honey_creamy/release_09": {
+      "source": "Schermopname 2026-09-07 165557.mp3",
+      "start_seconds": 14.931,
+      "end_seconds": 14.986,
+      "duration_ms": 60.0
+    },
+    "honey_creamy/release_10": {
+      "source": "Schermopname 2026-09-07 165557.mp3",
+      "start_seconds": 16.499,
+      "end_seconds": 16.527,
+      "duration_ms": 33.0
+    },
+    "honey_creamy/release_11": {
+      "source": "Schermopname 2026-09-07 165557.mp3",
+      "start_seconds": 16.591,
+      "end_seconds": 16.624,
+      "duration_ms": 38.0
+    },
+    "honey_creamy/release_12": {
+      "source": "Schermopname 2026-09-07 165557.mp3",
+      "start_seconds": 16.628,
+      "end_seconds": 16.654,
+      "duration_ms": 31.0
+    }
+  }
+}

@@ -1,0 +1,85 @@
+{
+  "packs": [
+    {
+      "id": "67-chaos",
+      "name": "67 Chaos",
+      "accent": "FF63B8",
+      "secondary": "77E8FF",
+      "events": {
+        "death": [
+          {"caption":"ABSOLUTELY TAXED","subtitle":"the respawn screen sends its regards","mascot":"receipt","effect":"impact","sound":"loss"},
+          {"caption":"NEGATIVE AURA","subtitle":"character development acquired","mascot":"gremlin","effect":"glitch","sound":"bonk"}
+        ],
+        "player_kill": [
+          {"caption":"+67 AURA","subtitle":"opponent status: decorative","mascot":"six_seven","effect":"aura","sound":"win"},
+          {"caption":"MAIN CHARACTER PATCH","subtitle":"installed successfully","mascot":"gremlin","effect":"confetti","sound":"win"}
+        ],
+        "mob_kill": {"caption":"SIDE QUEST CLEARED","subtitle":"tiny victory, unreasonable production","mascot":"block_beast","effect":"clean","sound":"bonk"},
+        "totem_pop": {"caption":"TOTEM CLOCKED IN","subtitle":"employee of the moment","mascot":"gremlin","effect":"impact","sound":"clutch"},
+        "clutch": [
+          {"caption":"UNREASONABLY ALIVE","subtitle":"half a heart. full plot armour.","mascot":"orbit_frog","effect":"shake","sound":"clutch"},
+          {"caption":"BRO REFUSED THE CUTSCENE","subtitle":"survival was somehow selected","mascot":"six_seven","effect":"aura","sound":"clutch"}
+        ],
+        "rare_pickup": {"caption":"MYTHIC BEHAVIOUR","subtitle":"{detail} acquired","mascot":"block_beast","effect":"confetti","sound":"rare"},
+        "milestone_67": {"caption":"SIX. SEVEN.","subtitle":"exactly 67 {detail}. no further context.","mascot":"six_seven","effect":"impact","sound":"six_seven"},
+        "level_67": {"caption":"LOCKED IN AT 67","subtitle":"the prophecy had one requirement","mascot":"six_seven","effect":"aura","sound":"six_seven"},
+        "inventory_full": {"caption":"POCKETS COOKED","subtitle":"inventory space has left the chat","mascot":"receipt","effect":"glitch","sound":"bonk"},
+        "preview": {"caption":"SIX. SEVEN.","subtitle":"pack preview — zero context, maximum timing","mascot":"six_seven","effect":"impact","sound":"six_seven"}
+      }
+    },
+    {
+      "id": "brainrot-bestiary",
+      "name": "Brainrot Bestiary",
+      "accent": "B8FF63",
+      "secondary": "FFB347",
+      "events": {
+        "death": {"caption":"RESPAWNINI REGRETTINI","subtitle":"a rare specimen returns to spawn","mascot":"block_beast","effect":"shake","sound":"loss"},
+        "player_kill": {"caption":"AURA CAPYBARONI","subtitle":"the creature has chosen violence","mascot":"gremlin","effect":"confetti","sound":"win"},
+        "mob_kill": {"caption":"BONKOLINI COMPLETINI","subtitle":"another side quest enters the lore","mascot":"block_beast","effect":"clean","sound":"bonk"},
+        "totem_pop": {"caption":"TOTEMBO SALVATORE","subtitle":"ancient pocket creature deployed","mascot":"orbit_frog","effect":"impact","sound":"clutch"},
+        "clutch": {"caption":"VIVISSIMO IMPOSSIBILE","subtitle":"one health point and infinite lore","mascot":"orbit_frog","effect":"aura","sound":"clutch"},
+        "rare_pickup": {"caption":"LOOTARDO BRILLANTINI","subtitle":"the {detail} joins your bestiary","mascot":"block_beast","effect":"confetti","sound":"rare"},
+        "milestone_67": {"caption":"SESSANTASETTE SUPREMO","subtitle":"67 {detail} detected in the habitat","mascot":"six_seven","effect":"glitch","sound":"six_seven"},
+        "level_67": {"caption":"LEVELINI SESSANTASETTE","subtitle":"the ecosystem is now unstable","mascot":"six_seven","effect":"confetti","sound":"six_seven"},
+        "inventory_full": {"caption":"INVENTORIO PIENISSIMO","subtitle":"the pockets can contain no more lore","mascot":"gremlin","effect":"glitch","sound":"bonk"},
+        "preview": {"caption":"BESTIARIO UNLOCKED","subtitle":"original creatures. deeply unnecessary lore.","mascot":"block_beast","effect":"confetti","sound":"rare"}
+      }
+    },
+    {
+      "id": "aura-exe",
+      "name": "Aura.exe",
+      "accent": "B86BFF",
+      "secondary": "56F6FF",
+      "events": {
+        "death": {"caption":"AURA BALANCE: OVERDRAWN","subtitle":"recovery arc loading","mascot":"none","effect":"glitch","sound":"loss"},
+        "player_kill": {"caption":"AURA FARM SUCCESSFUL","subtitle":"+{value} confirmed interaction","mascot":"six_seven","effect":"aura","sound":"win"},
+        "mob_kill": {"caption":"CASUAL AURA DEPOSIT","subtitle":"side quest acknowledged","mascot":"none","effect":"clean","sound":"bonk"},
+        "totem_pop": {"caption":"PLOT ARMOUR EXECUTED","subtitle":"fatal outcome cancelled","mascot":"none","effect":"impact","sound":"clutch"},
+        "clutch": {"caption":"LOCKED IN","subtitle":"survival probability ignored","mascot":"six_seven","effect":"aura","sound":"clutch"},
+        "rare_pickup": {"caption":"INVENTORY AURA SPIKE","subtitle":"{detail} secured","mascot":"none","effect":"confetti","sound":"rare"},
+        "milestone_67": {"caption":"AURA INTEGER: 67","subtitle":"canonical number reached","mascot":"six_seven","effect":"glitch","sound":"six_seven"},
+        "level_67": {"caption":"BUILD 6.7 ONLINE","subtitle":"player firmware is fully locked in","mascot":"six_seven","effect":"aura","sound":"six_seven"},
+        "inventory_full": {"caption":"STORAGE.EXE STOPPED","subtitle":"free slot not found","mascot":"none","effect":"glitch","sound":"bonk"},
+        "preview": {"caption":"AURA.EXE ONLINE","subtitle":"reaction layer armed","mascot":"six_seven","effect":"aura","sound":"six_seven"}
+      }
+    },
+    {
+      "id": "clean",
+      "name": "Clean Creator",
+      "accent": "F2F4F8",
+      "secondary": "89A8FF",
+      "events": {
+        "death": {"caption":"RUN ENDED","subtitle":"ready for the next one","mascot":"none","effect":"clean","sound":"loss"},
+        "player_kill": {"caption":"PLAYER DEFEATED","subtitle":"combat moment","mascot":"none","effect":"clean","sound":"win"},
+        "mob_kill": {"caption":"MOB DEFEATED","subtitle":"combat moment","mascot":"none","effect":"clean","sound":"bonk"},
+        "totem_pop": {"caption":"TOTEM USED","subtitle":"a fatal hit was prevented","mascot":"none","effect":"clean","sound":"clutch"},
+        "clutch": {"caption":"CLUTCH","subtitle":"survived on half a heart","mascot":"none","effect":"clean","sound":"clutch"},
+        "rare_pickup": {"caption":"RARE PICKUP","subtitle":"{detail} acquired","mascot":"none","effect":"clean","sound":"rare"},
+        "milestone_67": {"caption":"67 ITEM MILESTONE","subtitle":"{detail}","mascot":"none","effect":"clean","sound":"six_seven"},
+        "level_67": {"caption":"LEVEL 67","subtitle":"experience milestone","mascot":"none","effect":"clean","sound":"six_seven"},
+        "inventory_full": {"caption":"INVENTORY FULL","subtitle":"make room before the next pickup","mascot":"none","effect":"clean","sound":"bonk"},
+        "preview": {"caption":"CLEAN CREATOR","subtitle":"minimal reaction preview","mascot":"none","effect":"clean","sound":"rare"}
+      }
+    }
+  ]
+}
